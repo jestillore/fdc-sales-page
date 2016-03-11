@@ -4,7 +4,7 @@ require_once( 'lib/woocommerce-api.php' );
 
 $options = array(
     'ssl_verify'      => false
-    );
+);
 
 try {
 
@@ -32,42 +32,21 @@ $statuses = [
 	// 'failed' => 'Failed '
 ];
 
-
-// page
-$current = isset($_GET['page']) ? $_GET['page'] : 1;
-
-
 // fetch
 
-$status = isset($_GET['status']) ? $_GET['status'] : 'processing';
+$status = '';
 
-$params = [
-	'status' => $status,
-	'page' => $current,
-	'filter[meta]' => 'true'
+$ID = $_GET['id'];
+
+$params = [	'filter[meta]' => 'true'
 ];
 
-$response = $client->orders->get(null, $params);
+$response = $client->orders->get($ID, $params);
 
+header('Content-Type: application/json');
+echo json_encode($response);
 
-$orders = $response->orders;
-
-// pagination
-$offset = 3;
-$totalPages = $response->header['X-WC-TotalPages'];
-
-$pages = [$current];
-for ($i = 1; $i <= $offset; $i++) {
-	$left = $current - $i;
-	if ($left > 0)
-		$pages[] = $left;
-
-	$right = $current + $i;
-	if ($right <= $totalPages)
-		$pages[] = $right;
-}
-
-sort($pages);
+die;
 
 
 // helpers
@@ -78,7 +57,7 @@ function getStatus($order) {
 }
 
 function getOrder($order) {
-	return "<a href='order.php?id=$order->id'>#$order->id</a> by " . $order->customer->first_name . ' ' . $order->customer->last_name;
+	return "#$order->id by " . $order->customer->first_name . ' ' . $order->customer->last_name;
 }
 
 function getItems($order) {
@@ -167,84 +146,14 @@ function getPaginationLink($page) {
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		      	<ul class="nav navbar-nav">
 		      		<?php foreach($statuses as $key => $value): ?>
-		        	<li class="<?=($key == $status ? 'active' : '')?>"><a href="orders.php?status=<?=$key?>"><?=$value?></a></li>
+		        	<li class="<?=($key == $status ? 'active' : '')?>"><a href="?status=<?=$key?>"><?=$value?></a></li>
 		       		<?php endforeach;?>
 		      	</ul>
 		    </div><!-- /.navbar-collapse -->
 	  	</div><!-- /.container-fluid -->
 	</nav>
 	<div class="container">
-		<table class="table table-bordered">
-			<thead>
-				<tr>
-					<th>Status</th>
-					<th>Order</th>
-					<th>Purchased</th>
-					<th>Ship To</th>
-					<th>Date</th>
-					<th>Total</th>
-					<th>Delivery Date</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php foreach($orders as $order): ?>
-					<tr>
-						<td><?=getStatus($order)?></td>
-						<td><?=getOrder($order)?></td>
-						<td><?=getItems($order)?></td>
-						<td><?=getShipTo($order)?><br /><i class="text-muted">via <?=getShippingLines($order)?></i></td>
-						<td><?=getDates($order)?></td>
-						<td><?=getTotal($order)?><br /><i class="text-muted">via <?=getPaymentMethod($order)?></i></td>
-						<td><?=getDeliveryDate($order)?></td>
-					</tr>
-				<?php endforeach; ?>
-			</tbody>
-		</table>
-		<nav style="text-align: center;">
-		  	<ul class="pagination">
-
-		  	<?php if($current == 1): ?>
-		  		<li class="disabled">
-			    	<a aria-label="Previous">
-			    		<span aria-hidden="true">&laquo;</span>
-			    	</a>
-			    </li>
-		  	<?php else: ?>
-		  		<li>
-			    	<a href="<?=getPaginationLink($current - 1)?>" aria-label="Previous">
-			    		<span aria-hidden="true">&laquo;</span>
-			    	</a>
-			    </li>
-		  	<?php endif;?>
-		    
-		    <?php foreach($pages as $page): ?>
-		    	<?php if ($current == $page): ?>
-		    		<li class="active">
-			    		<a><?=$page?></a>
-		    		</li>
-		    	<?php else: ?>
-		    		<li>
-			    		<a href="<?=getPaginationLink($page)?>"><?=$page?></a>
-			    	</li>
-		    	<?php endif;?>
-		    <?php endforeach; ?>
-
-		    <?php if($current == $totalPages): ?>
-		  		<li class="disabled">
-			    	<a aria-label="Next">
-			        	<span aria-hidden="true">&raquo;</span>
-			      	</a>
-			    </li>
-		  	<?php else: ?>
-		  		<li>
-			    	<a href="<?=getPaginationLink($current + 1)?>" aria-label="Next">
-			        	<span aria-hidden="true">&raquo;</span>
-			      	</a>
-			    </li>
-		  	<?php endif;?>
-
-		 	</ul>
-		</nav>
+		
 	</div>
 </body>
 </html>
