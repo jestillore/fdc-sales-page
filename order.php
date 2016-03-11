@@ -1,26 +1,8 @@
 <?php
 
-require_once( 'lib/woocommerce-api.php' );
+require_once('./loader.php');
 
-$options = array(
-    'ssl_verify'      => false
-);
-
-try {
-
-    $client = new WC_API_Client('http://floresdecielito.com', 'ck_489f23cf911518cddd5845bcbcbd7ece0369ac30', 'cs_897caaa939fe45b71a050dc6c2cebf1201d91e39', $options);
-
-} catch ( WC_API_Client_Exception $e ) {
-
-    echo $e->getMessage() . PHP_EOL;
-    echo $e->getCode() . PHP_EOL;
-
-    if ( $e instanceof WC_API_Client_HTTP_Exception ) {
-
-        print_r( $e->get_request() );
-        print_r( $e->get_response() );
-    }
-}
+global $client;
 
 $statuses = [
 	'processing' => 'Processing ',
