@@ -21,7 +21,7 @@ $current = isset($_GET['page']) ? $_GET['page'] : 1;
 
 // fetch
 
-$status = isset($_GET['status']) ? $_GET['status'] : 'processing';
+$status = isset($_GET['status']) ? $_GET['status'] : '';
 
 $params = [
 	'status' => $status,
@@ -60,7 +60,7 @@ function getStatus($order) {
 }
 
 function getOrder($order) {
-	return "<a href='order.php?id=$order->id'>#$order->id</a> by " . $order->customer->first_name . ' ' . $order->customer->last_name;
+	return "<a href='order.php?id=$order->id'>#$order->id</a>";
 }
 
 function getItems($order) {
@@ -80,8 +80,8 @@ function getShippingLines($order) {
 	return join(', ', $lines);
 }
 
-function getDates($order) {
-	return date('Y/m/d', strtotime($order->created_at));
+function getDateOrdered($order) {
+	return date('d F, Y', strtotime($order->created_at));
 }
 
 function getTotal($order) {
@@ -106,11 +106,12 @@ function getPaginationLink($page) {
 		$q = [];
 		foreach ($str as $s) {
 			$p = explode('=', $s);
-			if ($p[0] != 'page')
+			if ($s && $p[0] != 'page')
 				$q[] = $s;
 		}
 
-		$qs .= join('&', $q) . '&';
+		if (count($q) > 0)
+			$qs .= join('&', $q) . '&';
 	}
 
 	$qs .= "page=$page";
@@ -148,6 +149,7 @@ function getPaginationLink($page) {
 		    <!-- Collect the nav links, forms, and other content for toggling -->
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		      	<ul class="nav navbar-nav">
+		      		<li class="<?=($status == '' ? 'active' : '')?>"><a href="orders.php">All</a></li>
 		      		<?php foreach($statuses as $key => $value): ?>
 		        	<li class="<?=($key == $status ? 'active' : '')?>"><a href="orders.php?status=<?=$key?>"><?=$value?></a></li>
 		       		<?php endforeach;?>
@@ -159,25 +161,33 @@ function getPaginationLink($page) {
 		<table class="table table-bordered">
 			<thead>
 				<tr>
+					<th>Order No.</th>
 					<th>Status</th>
-					<th>Order</th>
-					<th>Purchased</th>
-					<th>Ship To</th>
-					<th>Date</th>
-					<th>Total</th>
+					<th>Sender</th>
+					<th>Recipient</th>
+					<th>Items</th>
+					<th>Date Ordered</th>
 					<th>Delivery Date</th>
+					<th>Total Amount</th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php foreach($orders as $order): ?>
 					<tr>
-						<td><?=getStatus($order)?></td>
 						<td><?=getOrder($order)?></td>
-						<td><?=getItems($order)?></td>
-						<td><?=getShipTo($order)?><br /><i class="text-muted">via <?=getShippingLines($order)?></i></td>
-						<td><?=getDates($order)?></td>
-						<td><?=getTotal($order)?><br /><i class="text-muted">via <?=getPaymentMethod($order)?></i></td>
+						<td><?=getStatus($order)?></td>
+						<td><?=$order->billing_address->first_name?> <?=$order->billing_address->last_name?></td>
+						<td><?=$order->shipping_address->first_name?> <?=$order->shipping_address->last_name?></td>
+						<td>
+							<ul class="list-unstyled">
+								<?php foreach($order->line_items as $item): ?>
+									<li><?=$item->quantity?>x <?=$item->name?></li>
+								<?php endforeach;?>
+							</ul>
+						</td>
+						<td><?=getDateOrdered($order)?></td>
 						<td><?=getDeliveryDate($order)?></td>
+						<td><?=getTotal($order)?></td>
 					</tr>
 				<?php endforeach; ?>
 			</tbody>

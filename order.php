@@ -20,15 +20,26 @@ $status = '';
 
 $ID = $_GET['id'];
 
-$params = [	'filter[meta]' => 'true'
-];
+$params = [
+	'filter[meta]' => 'true'
+	];
 
 $response = $client->orders->get($ID, $params);
 
-header('Content-Type: application/json');
-echo json_encode($response);
+$order = $response->order;
 
-die;
+// header('Content-Type: application/json');
+// echo json_encode($order);
+// die;
+
+$images = [];
+
+foreach ($order->line_items as $item) {
+	$product = $client->products->get($item->product_id);
+	foreach ($product->product->images as $image) {
+		$images[] = $image;
+	}
+}
 
 
 // helpers
@@ -49,6 +60,16 @@ function getItems($order) {
 
 function getShipTo($order) {
 	return $order->shipping_address->first_name . ' ' . $order->shipping_address->last_name . ', ' . $order->shipping_address->address_1 . ', ' . $order->shipping_address->city;
+}
+
+function getAddress($addr) {
+	$address = $addr->address_1;
+	
+	if ($addr->address_2)
+		$address .= ', ' . $addr->address_2;
+
+	$address .= ', ' . $addr->city;	
+	return $address;
 }
 
 function getShippingLines($order) {
@@ -127,15 +148,91 @@ function getPaginationLink($page) {
 		    <!-- Collect the nav links, forms, and other content for toggling -->
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		      	<ul class="nav navbar-nav">
+		      		<li><a href="orders.php">All</a></li>
 		      		<?php foreach($statuses as $key => $value): ?>
-		        	<li class="<?=($key == $status ? 'active' : '')?>"><a href="?status=<?=$key?>"><?=$value?></a></li>
+		        	<li class="<?=($key == $status ? 'active' : '')?>"><a href="orders.php?status=<?=$key?>"><?=$value?></a></li>
 		       		<?php endforeach;?>
 		      	</ul>
 		    </div><!-- /.navbar-collapse -->
 	  	</div><!-- /.container-fluid -->
 	</nav>
 	<div class="container">
-		
+		<div class="row">
+			<div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2">
+				<div class="row">
+					<?php foreach($images as $image): ?>
+						<div class="col-lg-4 col-md-4">
+							<img width="100%" src="<?=$image->src?>" title="<?=$image->title?>" />
+						</div>
+					<?php endforeach;?>
+				</div>
+				<br />
+				<div class="row">
+					<table class="table table-bordered">
+						<tr>
+							<td>Order Number: </td>
+							<td><?=$order->order_number?></td>
+						</tr>
+						<tr>
+							<td>Products: </td>
+							<td>
+								<ul class="list-unstyled">
+									<?php foreach($order->line_items as $item): ?>
+										<li><?=$item->quantity?>x <?=$item->name?></li>
+									<?php endforeach;?>
+								</ul>
+							</td>
+						</tr>
+						<tr>
+							<td>Amount: </td>
+							<td><?=$order->currency?> <?=$order->total?></td>
+						</tr>
+						<tr>
+							<td>Recipient's Name: </td>
+							<td><?=$order->shipping_address->first_name?> <?=$order->shipping_address->last_name?></td>
+						</tr>
+						<tr>
+							<td>Address Details: </td>
+							<td><?=getAddress($order->shipping_address)?></td>
+						</tr>
+						<tr>
+							<td>Delivery Date: </td>
+							<td><?=getDeliveryDate($order)?></td>
+						</tr>
+						<tr>
+							<td>Message: </td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Delivery Instructions</td>
+							<td><?=$order->note?></td>
+						</tr>
+						<tr>
+							<td>Sender's Name: </td>
+							<td><?=$order->billing_address->first_name?> <?=$order->billing_address->last_name?></td>
+						</tr>
+						<tr>
+							<td>Address Details: </td>
+							<td><?=getAddress($order->billing_address)?></td>
+						</tr>
+						<tr>
+							<td>Email and Contact Number: </td>
+							<td>
+								<ul class="list-unstyled">
+									<li><?=$order->billing_address->email?></li>
+									<li><?=$order->customer->customer_meta->shipping_phone?></li>
+									<li><?=$order->customer->customer_meta->shipping_cel?></li>
+								</ul>
+							</td>
+						</tr>
+						<tr>
+							<td>Date Ordered: </td>
+							<td><?=date('d F, Y', strtotime($order->created_at))?></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

@@ -101,7 +101,7 @@ class WC_API_Client_Authentication {
 		// form string to sign (first key)
 		$string_to_sign = $http_method . '&' . $base_request_uri . '&' . $query_string;
 
-		return base64_encode( hash_hmac( self::HASH_ALGORITHM, $string_to_sign, $this->consumer_secret . '&', true ) );
+		return base64_encode( hash_hmac( self::HASH_ALGORITHM, $string_to_sign, $this->consumer_secret, true ) );
 	}
 
 
