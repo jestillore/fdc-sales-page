@@ -1,11 +1,11 @@
 <?php
 
 require_once( 'lib/woocommerce-api.php' );
-require_once('../wp-load.php');
 
 $enable_login = false;
 
 if ($enable_login) {
+	require_once('../wp-load.php');
 	function redirect_to_login_page() {
 		$actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 		header('Location: ../wp-login.php?redirect_to=' . urlencode($actual_link) . '&reauth=1');
