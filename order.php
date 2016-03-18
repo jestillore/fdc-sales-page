@@ -14,6 +14,7 @@ $statuses = [
 	// 'failed' => 'Failed '
 ];
 
+
 // fetch
 
 $status = '';
@@ -27,6 +28,13 @@ $params = [
 $response = $client->orders->get($ID, $params);
 
 $order = $response->order;
+
+// $order = new WC_Order($ID);
+// $order->update_status('completed');
+
+// $order = $client->orders->update($ID, [
+// 	'status' => 'processing'
+// 	]);
 
 // header('Content-Type: application/json');
 // echo json_encode($order);
@@ -95,6 +103,11 @@ function getPaymentMethod($order) {
 function getDeliveryDate($order) {
 	$om = (array) $order->order_meta;
 	return $om['Delivery Date'];
+}
+
+function getMessage($order) {
+	$om = (array) $order->order_meta;
+	return $om['Order Message'];
 }
 
 function getPaginationLink($page) {
@@ -168,68 +181,87 @@ function getPaginationLink($page) {
 				</div>
 				<br />
 				<div class="row">
-					<table class="table table-bordered">
-						<tr>
-							<td>Order Number: </td>
-							<td><?=$order->order_number?></td>
-						</tr>
-						<tr>
-							<td>Products: </td>
-							<td>
-								<ul class="list-unstyled">
-									<?php foreach($order->line_items as $item): ?>
-										<li><?=$item->quantity?>x <?=$item->name?></li>
-									<?php endforeach;?>
-								</ul>
-							</td>
-						</tr>
-						<tr>
-							<td>Amount: </td>
-							<td><?=$order->currency?> <?=$order->total?></td>
-						</tr>
-						<tr>
-							<td>Recipient's Name: </td>
-							<td><?=$order->shipping_address->first_name?> <?=$order->shipping_address->last_name?></td>
-						</tr>
-						<tr>
-							<td>Address Details: </td>
-							<td><?=getAddress($order->shipping_address)?></td>
-						</tr>
-						<tr>
-							<td>Delivery Date: </td>
-							<td><?=getDeliveryDate($order)?></td>
-						</tr>
-						<tr>
-							<td>Message: </td>
-							<td></td>
-						</tr>
-						<tr>
-							<td>Delivery Instructions</td>
-							<td><?=$order->note?></td>
-						</tr>
-						<tr>
-							<td>Sender's Name: </td>
-							<td><?=$order->billing_address->first_name?> <?=$order->billing_address->last_name?></td>
-						</tr>
-						<tr>
-							<td>Address Details: </td>
-							<td><?=getAddress($order->billing_address)?></td>
-						</tr>
-						<tr>
-							<td>Email and Contact Number: </td>
-							<td>
-								<ul class="list-unstyled">
-									<li><?=$order->billing_address->email?></li>
-									<li><?=$order->customer->customer_meta->shipping_phone?></li>
-									<li><?=$order->customer->customer_meta->shipping_cel?></li>
-								</ul>
-							</td>
-						</tr>
-						<tr>
-							<td>Date Ordered: </td>
-							<td><?=date('d F, Y', strtotime($order->created_at))?></td>
-						</tr>
-					</table>
+					<form action="update-order.php" method="POST">
+						<input type="hidden" name="id" value="<?=$ID?>" />
+						<table class="table table-bordered">
+							<tr>
+								<td>Order Number: </td>
+								<td><?=$order->order_number?></td>
+							</tr>
+							<tr>
+								<td>Products: </td>
+								<td>
+									<ul class="list-unstyled">
+										<?php foreach($order->line_items as $item): ?>
+											<li><?=$item->quantity?>x <?=$item->name?></li>
+										<?php endforeach;?>
+									</ul>
+								</td>
+							</tr>
+							<tr>
+								<td>Amount: </td>
+								<td><?=$order->currency?> <?=$order->total?></td>
+							</tr>
+							<tr>
+								<td>Recipient's Name: </td>
+								<td><?=$order->shipping_address->first_name?> <?=$order->shipping_address->last_name?></td>
+							</tr>
+							<tr>
+								<td>Address Details: </td>
+								<td><?=getAddress($order->shipping_address)?></td>
+							</tr>
+							<tr>
+								<td>Delivery Date: </td>
+								<td><?=getDeliveryDate($order)?></td>
+							</tr>
+							<tr>
+								<td>Message: </td>
+								<td><?=getMessage($order)?></td>
+							</tr>
+							<tr>
+								<td>Delivery Instructions</td>
+								<td><?=$order->note?></td>
+							</tr>
+							<tr>
+								<td>Sender's Name: </td>
+								<td><?=$order->billing_address->first_name?> <?=$order->billing_address->last_name?></td>
+							</tr>
+							<tr>
+								<td>Address Details: </td>
+								<td><?=getAddress($order->billing_address)?></td>
+							</tr>
+							<tr>
+								<td>Email and Contact Number: </td>
+								<td>
+									<ul class="list-unstyled">
+										<li><?=$order->billing_address->email?></li>
+										<li><?=$order->customer->customer_meta->shipping_phone?></li>
+										<li><?=$order->customer->customer_meta->shipping_cel?></li>
+									</ul>
+								</td>
+							</tr>
+							<tr>
+								<td>Date Ordered: </td>
+								<td><?=date('d F, Y', strtotime($order->created_at))?></td>
+							</tr>
+							<tr>
+								<td>Status: </td>
+								<td>
+									<select class="form-control" name="status">
+										<?php foreach($statuses as $key => $value): ?>
+											<option <?=$key === $order->status ? 'selected' : ''?> value="<?=$key?>"><?=$value?></option>
+										<?php endforeach;?>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<input type="submit" class="btn btn-primary" value="Save" />
+								</td>
+							</tr>
+						</table>
+					</form>
 				</div>
 			</div>
 		</div>
