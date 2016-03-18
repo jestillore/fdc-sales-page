@@ -10,17 +10,17 @@ if ( $lockout_days != '' && $lockout_days != '{}' && $lockout_days != '[]' ) {
     $lockout_days_arr = json_decode( get_option( 'orddd_lite_lockout_days' ) );
 }
 
-$lockout_dates = [];
+$lockout_dates = array();
 
 $ddate = $_GET['date'];
 
 foreach ( $lockout_days_arr as $k => $v ) {
     if ( $v->o >= get_option( 'orddd_lite_lockout_date_after_orders' ) ) {
     	if ($v->d !== $ddate)
-	    	$lockout_dates[] = [
+	    	$lockout_dates[] = array(
 	    		'o' => $v->o,
 	    		'd' => $v->d
-	    		];
+	    		);
     }
 }
 

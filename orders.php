@@ -4,7 +4,7 @@ require_once('./loader.php');
 
 global $client;
 
-$statuses = [
+$statuses = array(
 	'processing' => 'Processing ',
 	'pending' => 'Pending Payment',
 	// 'on-hold' => 'On Hold ',
@@ -12,7 +12,7 @@ $statuses = [
 	'cancelled' => 'Cancelled ',
 	// 'refunded' => 'Refunded ',
 	// 'failed' => 'Failed '
-];
+);
 
 
 // page
@@ -23,11 +23,11 @@ $current = isset($_GET['page']) ? $_GET['page'] : 1;
 
 $status = isset($_GET['status']) ? $_GET['status'] : '';
 
-$params = [
+$params = array(
 	'status' => $status,
 	'page' => $current,
 	'filter[meta]' => 'true'
-];
+);
 
 $response = $client->orders->get(null, $params);
 
@@ -73,7 +73,7 @@ function getShipTo($order) {
 }
 
 function getShippingLines($order) {
-	$lines = [];
+	$lines = array();
 	foreach ($order->shipping_lines as $line) {
 		$lines[] = $line->method_title;
 	}
@@ -103,7 +103,7 @@ function getPaginationLink($page) {
 		
 		// remove page parameter
 		$str = explode('&', $_SERVER['QUERY_STRING']);
-		$q = [];
+		$q = array();
 		foreach ($str as $s) {
 			$p = explode('=', $s);
 			if ($s && $p[0] != 'page')

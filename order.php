@@ -4,7 +4,7 @@ require_once('./loader.php');
 
 global $client;
 
-$statuses = [
+$statuses = array(
 	'processing' => 'Processing ',
 	'pending' => 'Pending Payment',
 	// 'on-hold' => 'On Hold ',
@@ -12,7 +12,7 @@ $statuses = [
 	'cancelled' => 'Cancelled ',
 	// 'refunded' => 'Refunded ',
 	// 'failed' => 'Failed '
-];
+);
 
 // fetch
 
@@ -20,9 +20,9 @@ $status = '';
 
 $ID = $_GET['id'];
 
-$params = [
+$params = array(
 	'filter[meta]' => 'true'
-	];
+	);
 
 $response = $client->orders->get($ID, $params);
 
@@ -39,7 +39,7 @@ $order = $response->order;
 // echo json_encode($order);
 // die;
 
-$images = [];
+$images = array();
 
 foreach ($order->line_items as $item) {
 	$product = $client->products->get($item->product_id);
@@ -80,7 +80,7 @@ function getAddress($addr) {
 }
 
 function getShippingLines($order) {
-	$lines = [];
+	$lines = array();
 	foreach ($order->shipping_lines as $line) {
 		$lines[] = $line->method_title;
 	}
@@ -115,7 +115,7 @@ function getPaginationLink($page) {
 		
 		// remove page parameter
 		$str = explode('&', $_SERVER['QUERY_STRING']);
-		$q = [];
+		$q = array();
 		foreach ($str as $s) {
 			$p = explode('=', $s);
 			if ($p[0] != 'page')

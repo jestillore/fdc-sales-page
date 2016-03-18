@@ -4,7 +4,7 @@ require_once('./loader.php');
 
 global $client;
 
-$statuses = [
+$statuses = array(
 	'processing' => 'Processing ',
 	'pending' => 'Pending Payment',
 	// 'on-hold' => 'On Hold ',
@@ -12,7 +12,7 @@ $statuses = [
 	'cancelled' => 'Cancelled ',
 	// 'refunded' => 'Refunded ',
 	// 'failed' => 'Failed '
-];
+);
 
 
 // enable lockout date
@@ -30,7 +30,7 @@ if ( $lockout_days != '' && $lockout_days != '{}' && $lockout_days != '[]' ) {
     $lockout_days_arr = json_decode( get_option( 'orddd_lite_lockout_days' ) );
 }
 
-$lockout_dates = [];
+$lockout_dates = array();
 
 foreach ( $lockout_days_arr as $k => $v ) {
     if ( $v->o >= get_option( 'orddd_lite_lockout_date_after_orders' ) ) {
