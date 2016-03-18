@@ -14,7 +14,7 @@ if ($enable_login) {
 	if (is_user_logged_in() ) {
 		global $current_user;
 		get_currentuserinfo();
-		if (array_search('shop_manager', $current_user->roles) === FALSE) {
+		if (array_search('shop_manager', $current_user->roles) === FALSE && array_search('administrator', $current_user->roles) === FALSE) {
 			wp_logout();
 			redirect_to_login_page();
 		}

@@ -153,6 +153,7 @@ function getPaginationLink($page) {
 		      		<?php foreach($statuses as $key => $value): ?>
 		        	<li class="<?=($key == $status ? 'active' : '')?>"><a href="orders.php?status=<?=$key?>"><?=$value?></a></li>
 		       		<?php endforeach;?>
+		       		<li class=""><a href="holidays.php">Holidays</a></li>
 		      	</ul>
 		    </div><!-- /.navbar-collapse -->
 	  	</div><!-- /.container-fluid -->

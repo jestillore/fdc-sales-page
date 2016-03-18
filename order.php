@@ -14,7 +14,6 @@ $statuses = [
 	// 'failed' => 'Failed '
 ];
 
-
 // fetch
 
 $status = '';
