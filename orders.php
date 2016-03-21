@@ -38,7 +38,7 @@ $orders = $response->orders;
 $offset = 3;
 $totalPages = $response->header['X-WC-TotalPages'];
 
-$pages = [$current];
+$pages = array($current);
 for ($i = 1; $i <= $offset; $i++) {
 	$left = $current - $i;
 	if ($left > 0)

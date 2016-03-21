@@ -230,10 +230,19 @@ function getPaginationLink($page) {
 								<td><?=getAddress($order->billing_address)?></td>
 							</tr>
 							<tr>
-								<td>Email and Contact Number: </td>
+								<td>Sender Email and Contact Number: </td>
 								<td>
 									<ul class="list-unstyled">
 										<li><?=$order->billing_address->email?></li>
+										<li><?=$order->customer->customer_meta->billing_phone?></li>
+										<li><?=$order->customer->customer_meta->billing_cel?></li>
+									</ul>
+								</td>
+							</tr>
+							<tr>
+								<td>Recipient Contact Number: </td>
+								<td>
+									<ul class="list-unstyled">
 										<li><?=$order->customer->customer_meta->shipping_phone?></li>
 										<li><?=$order->customer->customer_meta->shipping_cel?></li>
 									</ul>
@@ -246,7 +255,7 @@ function getPaginationLink($page) {
 							<tr>
 								<td>Status: </td>
 								<td>
-									<select class="form-control" name="status">
+									<select <?=($order->status === 'completed' || $order->status === 'cancelled') ? 'disabled' : ''?> class="form-control" name="status">
 										<?php foreach($statuses as $key => $value): ?>
 											<option <?=$key === $order->status ? 'selected' : ''?> value="<?=$key?>"><?=$value?></option>
 										<?php endforeach;?>

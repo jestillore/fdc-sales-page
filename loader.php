@@ -34,9 +34,9 @@ try {
 
 
 
-    // $client = new WC_API_Client('http://floresdecielito.com', 'ck_489f23cf911518cddd5845bcbcbd7ece0369ac30', 'cs_897caaa939fe45b71a050dc6c2cebf1201d91e39', $options);
+    $client = new WC_API_Client('http://floresdecielito.com', 'ck_489f23cf911518cddd5845bcbcbd7ece0369ac30', 'cs_897caaa939fe45b71a050dc6c2cebf1201d91e39', $options);
 
-	$client = new WC_API_Client('http://localhost/wordpress', 'ck_9e6bbec98a55fb0e2d252558d44e7be0dba4bf83', 'cs_8f18a41d4dbeaecb9e10d29ecb4a9fc556c94e74', $options);
+	// $client = new WC_API_Client('http://localhost/wordpress', 'ck_9e6bbec98a55fb0e2d252558d44e7be0dba4bf83', 'cs_8f18a41d4dbeaecb9e10d29ecb4a9fc556c94e74', $options);
 
 } catch ( WC_API_Client_Exception $e ) {
 
